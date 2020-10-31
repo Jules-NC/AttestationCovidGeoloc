@@ -23,6 +23,10 @@ def get_file():
 def update():
     print("------------------------------------------------------------")
     location = (request.args.get('N'), request.args.get('E'))
+    name = request.args.get("name")
+    birthdate = request.args.get("birthdate")
+    birthcity = request.args.get("birthcity")
+
     all_the_bousin(location)
     print("------------------------------------------------------------")
     return "File updated"
@@ -35,7 +39,7 @@ def setup(location):
     results = rg.search(coordinates) # default mode = 2
 
     # Define Variables
-    time = datetime.now() - timedelta(hours=0, minutes=20)
+    time = datetime.now() + timedelta(hours=0, minutes=40) # Because dockerfile is in UTC so i add my timezone 
 
     CITY = results[0]["name"]
     CITY_CODE = "94000"
