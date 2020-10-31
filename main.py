@@ -26,19 +26,24 @@ def update():
     name = request.args.get("name")
     birthdate = request.args.get("birthdate")
     birthcity = request.args.get("birthcity")
+    
 
-    all_the_bousin(location)
+    all_the_bousin(location, name, birthdate, birthcity)
     print("------------------------------------------------------------")
     return "File updated"
 
 
 
-def setup(location):
+def setup(location, name, birthdate, birthcity):
     # Get location
     coordinates = location
     results = rg.search(coordinates) # default mode = 2
 
     # Define Variables
+    NAME = name
+    BIRTHDATE= birthdate
+    BIRTHCITY = birthcity
+
     time = datetime.now() + timedelta(hours=0, minutes=40) # Because dockerfile is in UTC so i add my timezone 
 
     CITY = results[0]["name"]
@@ -49,13 +54,20 @@ def setup(location):
     TIME = str(time.strftime('%H:%M'))
     
     fields = {
+        "name": NAME,
+        "birthcity": birthcity,
+        "birthdate": birthdate,
         "full_adress": FULL_ADRESS,
         "city":CITY,
         "date":DATE,
         "time":TIME
     }
 
-    fields_loc  =  {FULL_ADRESS:(369, 498),
+    fields_loc  =  {
+                NAME: (330, 377),
+                BIRTHCITY: (824, 437),
+                BIRTHDATE: (330, 437),
+                FULL_ADRESS:(369, 498),
                 CITY:(290, 1818),
                 DATE:(253, 1885),
                 TIME:(732, 1885),  
@@ -63,13 +75,13 @@ def setup(location):
     return (fields, fields_loc)
 
 
-def all_the_bousin(location):
+def all_the_bousin(location, name, birthdate, birthcity):
     # Base infos
     PDF = "blank.pdf"
     FONT = "fonts/micross.ttf"
     FONT_SIZE = 31
 
-    fields, fields_loc = setup(location)
+    fields, fields_loc = setup(location, name, birthdate, birthcity)
     
     pages = convert_from_path(PDF)
 
