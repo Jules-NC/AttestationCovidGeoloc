@@ -99,13 +99,13 @@ def all_the_bousin(location, name, birthdate, birthcity):
 
     # QR Code generator
     TEXT = """Cree le: {date} a {h}h{mn};
- Nom: Neghnagh--Chenavas;
- Prenom: Jules;
- Naissance: 20/05/1997 a Créteil;
+ Nom: {pastname};
+ Prenom: {prename};
+ Naissance: {bdate} a {bcity};
  Adresse: {adress};
  Sortie: {date} a {time};
  Motifs: sport_animaux""".format(adress=fields["full_adress"], date=fields["date"], time=fields["time"],
-                                 h=fields["time"][:2], mn=fields["time"][3:])
+                                 h=fields["time"][:2], mn=fields["time"][3:], pastname = name.split()[1], prename = name.split()[0], bdate=birthdate, bcity=birthcity)
 
     TEXT = str(TEXT)
     img = QRCode.make(TEXT)
