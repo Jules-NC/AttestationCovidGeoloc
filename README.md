@@ -6,4 +6,6 @@ C'est la clef des champs. 🎃
 
 **run:** `sudo docker run -it -p 28411:28411 clefdeschamps`
 
+EDIT FIREFOX ¨Blocked loading mixed active content"
+
 ![clef des champs](https://lh3.googleusercontent.com/proxy/SDdlHbPnN2CTJWeK_mDWWnSnn0pCgCF0A8nOt21wTg_mlTuh__2ITloEm0tlZZ-KiXOOIqhJSX_Ab22Vk0SzP-UsJFPXqfue6EoSUIem)
