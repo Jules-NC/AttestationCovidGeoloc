@@ -2,24 +2,30 @@ import os
 from pdf2image import convert_from_path, convert_from_bytes
 from PIL import Image, ImageFont, ImageDraw, ImageFilter
 import qrcode as QRCode
-import reverse_geocoder as rg
+import math
+import pandas as pd
 from datetime import datetime, timedelta
 from flask import Flask, request, abort, jsonify, send_from_directory
-
+from flask_cors import CORS
 
 UPLOAD_DIRECTORY = "./"
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
 
+
+
+
 api = Flask(__name__)
+CORS(api)
+
 
 @api.route("/file")
 def get_file():
     """Download a file."""
     return send_from_directory(UPLOAD_DIRECTORY, "attestation.pdf", as_attachment=True)
 
-@api.route("/update")
+@api.route("/update", methods = ['GET', 'POST'])
 def update():
     print("------------------------------------------------------------")
     location = (request.args.get('N'), request.args.get('E'))
@@ -35,9 +41,21 @@ def update():
 
 
 def setup(location, name, birthdate, birthcity):
+    # Setup db
+
+    df = pd.read_csv("db.csv")
+
+    
     # Get location
     coordinates = location
-    results = rg.search(coordinates) # default mode = 2
+    #results = rg.search(coordinates) # default mode = 2
+
+    # Compute dists, get min distance
+    df["point_lat"] = float(coordinates[0])
+    df["point_long"] = float(coordinates[1])
+    df["dist"] = df.apply(lambda x: math.sqrt((x.lat - x.point_lat)**2 + (x.long - x.point_long)**2), axis=1)
+    df = df.loc[df['dist'].idxmin()]
+    print(df)
 
     # Define Variables
     NAME = name
@@ -46,9 +64,9 @@ def setup(location, name, birthdate, birthcity):
 
     time = datetime.now() + timedelta(hours=0, minutes=40) # Because dockerfile is in UTC so i add my timezone 
 
-    CITY = results[0]["name"]
-    CITY_CODE = "94000"
-    ADRESS = "10 allée Bourvil"
+    CITY = df["city"]
+    CITY_CODE = str(df["zipcode"])
+    ADRESS = df["adress"]
     FULL_ADRESS = ADRESS + " " + CITY_CODE + " " + CITY
     DATE = str(time.strftime('%d/%m/%Y'))
     TIME = str(time.strftime('%H:%M'))
