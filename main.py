@@ -77,6 +77,9 @@ def setup(location, name, birthdate, birthcity):
 
     # Define Variables
     NAME = name
+    if len(name.split()) == 1:
+        NAME += " ."
+
     BIRTHDATE= birthdate
     BIRTHCITY = birthcity
 
@@ -142,7 +145,7 @@ def all_the_bousin(location, name, birthdate, birthcity):
  Adresse: {adress};
  Sortie: {date} a {time};
  Motifs: sport_animaux""".format(adress=fields["full_adress"], date=fields["date"], time=fields["time"],
-                                 h=fields["time"][:2], mn=fields["time"][3:], pastname = name.split()[1], prename = name.split()[0], bdate=birthdate, bcity=birthcity)
+                                 h=fields["time"][:2], mn=fields["time"][3:], pastname = fields["name"].split()[1], prename = fields["name"].split()[0], bdate=birthdate, bcity=birthcity)
 
     TEXT = str(TEXT)
     img = QRCode.make(TEXT)
@@ -181,4 +184,4 @@ def all_the_bousin(location, name, birthdate, birthcity):
 
 
 if __name__ == "__main__":
-    api.run(host='0.0.0.0', debug=True, port=28411)
+    api.run(host='0.0.0.0', debug=False, port=28411)
