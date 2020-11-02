@@ -51,7 +51,7 @@ def update():
 
     all_the_bousin(location, name, birthdate, birthcity)
     print("------------------------------------------------------------")
-    return redirect("https://perso.esiee.fr/~neghnagj/configurable", code=301)
+    return redirect("http://89.92.239.20:28411/file", code=301)
 
 
 def nearest_neighbour(point):
