@@ -5,7 +5,7 @@ import qrcode as QRCode
 import math
 import pandas as pd
 from datetime import datetime, timedelta
-from flask import Flask, request, abort, jsonify, send_from_directory
+from flask import Flask, request, abort, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from scipy import spatial
 
@@ -51,7 +51,7 @@ def update():
 
     all_the_bousin(location, name, birthdate, birthcity)
     print("------------------------------------------------------------")
-    return "File updated"
+    return redirect("https://perso.esiee.fr/~neghnagj/configurable", code=301)
 
 
 def nearest_neighbour(point):
