@@ -7,24 +7,39 @@ import pandas as pd
 from datetime import datetime, timedelta
 from flask import Flask, request, abort, jsonify, send_from_directory
 from flask_cors import CORS
+from scipy import spatial
 
 UPLOAD_DIRECTORY = "./"
+
+# Loading DB & het points for kd tree
+print("Loading DB...")
+df = pd.read_csv("grid_result_IDF.csv")
+points = df[['lat','long']].values
+ilocs = df.iloc
+print("DB loaded")
+
+# Create kd tree
+print("Building KD-Tree...")
+tree = spatial.KDTree(points)
+print("KD-TREE built")
+
 
 if not os.path.exists(UPLOAD_DIRECTORY):
     os.makedirs(UPLOAD_DIRECTORY)
 
-
-
-
+# Flask init
 api = Flask(__name__)
 CORS(api)
 
 
+# Download last file route
 @api.route("/file")
 def get_file():
     """Download a file."""
     return send_from_directory(UPLOAD_DIRECTORY, "attestation.pdf", as_attachment=True)
 
+
+# Update file route
 @api.route("/update", methods = ['GET', 'POST'])
 def update():
     print("------------------------------------------------------------")
@@ -39,35 +54,39 @@ def update():
     return "File updated"
 
 
+def nearest_neighbour(point):
+    res = tree.query([point])[1][0]
+    return df.iloc[res, :]
+
 
 def setup(location, name, birthdate, birthcity):
     # Setup db
+    global df
 
-    df = pd.read_csv("db.csv")
-
-    
     # Get location
-    coordinates = location
     #results = rg.search(coordinates) # default mode = 2
 
     # Compute dists, get min distance
-    df["point_lat"] = float(coordinates[0])
-    df["point_long"] = float(coordinates[1])
-    df["dist"] = df.apply(lambda x: math.sqrt((x.lat - x.point_lat)**2 + (x.long - x.point_long)**2), axis=1)
-    df = df.loc[df['dist'].idxmin()]
-    print(df)
+    #df["point_lat"] = float(coordinates[0])
+    #df["point_long"] = float(coordinates[1])
+    #df["dist"] = df.apply(lambda x: math.sqrt((x.lat - x.point_lat)**2 + (x.long - x.point_long)**2), axis=1)
+    #df2 = df.loc[df['dist'].idxmin()]
+    #print(df2)
+    coordinates = nearest_neighbour((float(location[0]), float(location[1])))
+    print(coordinates)
 
     # Define Variables
     NAME = name
     BIRTHDATE= birthdate
     BIRTHCITY = birthcity
 
-    time = datetime.now() + timedelta(hours=0, minutes=40) # Because dockerfile is in UTC so i add my timezone 
+    time = datetime.now() + timedelta(hours=0, minutes=30) # Because dockerfile is in UTC so i add my timezone 
 
-    CITY = df["city"]
-    CITY_CODE = str(df["zipcode"])
-    ADRESS = df["adress"]
-    FULL_ADRESS = ADRESS + " " + CITY_CODE + " " + CITY
+    CITY = coordinates["city"]
+    CITY_CODE = str(coordinates["zipcode"])
+    ADRESS = coordinates["adress"]
+    NUMBER = coordinates["number"]
+    FULL_ADRESS = NUMBER + " " + ADRESS + " " + CITY_CODE + " " + CITY
     DATE = str(time.strftime('%d/%m/%Y'))
     TIME = str(time.strftime('%H:%M'))
     
