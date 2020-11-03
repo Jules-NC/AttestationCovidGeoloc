@@ -9,7 +9,7 @@ from flask import Flask, request, abort, jsonify, send_from_directory, redirect
 from flask_cors import CORS
 from scipy import spatial
 
-UPLOAD_DIRECTORY = "./"
+UPLOAD_DIRECTORY = "./files/"
 
 # Loading DB & het points for kd tree
 print("Loading DB...")
@@ -33,25 +33,26 @@ CORS(api)
 
 
 # Download last file route
-@api.route("/file")
-def get_file():
+@api.route("/files/<path:filename>")
+def get_file(filename):
     """Download a file."""
-    return send_from_directory(UPLOAD_DIRECTORY, "attestation.pdf", as_attachment=True)
+    return send_from_directory(UPLOAD_DIRECTORY, filename, as_attachment=True)
 
 
 # Update file route
 @api.route("/update", methods = ['GET', 'POST'])
 def update():
-    print("------------------------------------------------------------")
+    print("============================================================")
     location = (request.args.get('N'), request.args.get('E'))
     name = request.args.get("name")
     birthdate = request.args.get("birthdate")
     birthcity = request.args.get("birthcity")
-    
-
-    all_the_bousin(location, name, birthdate, birthcity)
-    print("------------------------------------------------------------")
-    return redirect("http://89.92.239.20:28411/file", code=301)
+    session_id = request.args.get("session_id")
+    print("ARGS:", request.args)
+    print("name:", name, "\nbdate:", birthdate, "\nbcity:", birthcity, "\nSession_id:", session_id, '\n------------------------------------------------------------')
+    all_the_bousin(location, name, birthdate, birthcity, session_id)
+    print("============================================================")
+    return redirect("http://89.92.239.20:28411/files/" + session_id + ".pdf", code=301)
 
 
 def nearest_neighbour(point):
@@ -115,7 +116,7 @@ def setup(location, name, birthdate, birthcity):
     return (fields, fields_loc)
 
 
-def all_the_bousin(location, name, birthdate, birthcity):
+def all_the_bousin(location, name, birthdate, birthcity, session_id):
     # Base infos
     PDF = "blank.pdf"
     FONT = "fonts/micross.ttf"
@@ -178,10 +179,10 @@ def all_the_bousin(location, name, birthdate, birthcity):
     res1 = Image.open('result1.jpg')
     results= [res1]
 
-    filename = "attestation.pdf" # -2020-" + fields["date"][3:5] + "-" + fields["date"][:2] + "_" + fields["time"][:2] + "-" + fields["time"][3:] + ".pdf"
-    res0.save(filename, "PDF" ,resolution=100.0, save_all=True, append_images=results)
+    filename = session_id + ".pdf" # -2020-" + fields["date"][3:5] + "-" + fields["date"][:2] + "_" + fields["time"][:2] + "-" + fields["time"][3:] + ".pdf"
+    res0.save(UPLOAD_DIRECTORY + filename, "PDF" ,resolution=100.0, save_all=True, append_images=results)
     print("FILE WRITED OK")
 
 
 if __name__ == "__main__":
-    api.run(host='0.0.0.0', debug=False, port=28411)
+    api.run(host='0.0.0.0', debug=True, port=28411)
