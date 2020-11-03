@@ -8,7 +8,7 @@ _C'est la clef des champs. 🎃_
 
 - Le fichier pdf est en fait une image en pdf, car éditer un PDF c'est une torture, et puis la différence est nulle et puis PIL c'est génial
 
-À noter: La "database csv" est dans la branche db. Elle est générée par mes soins à partir des données d'openStreetMap sur la base d'un quadrillage à 300m via un KD-Tree. J'ai quadrillé l'IDF uniquement. Pour la France enti1ere cela représente 9M de points à chercher sur la database qui en contient 20M - la db est assez light à la campagne - et demande de mettre une feuille par branche pour optimiser les query, ce qui implique un grand arbre - **18GB de RAM !** - et de longs temps de calculs - 5400s - donc c'est pas possible sur raspberry (je sais pas si des algo out-of-core existent).
+**À noter:** La "database csv" est dans la branche db. Elle est générée par mes soins à partir des données d'openStreetMap sur la base d'un quadrillage à 300m via un KD-Tree. J'ai quadrillé l'IDF uniquement. Pour la France enti1ere cela représente 9M de points à chercher sur la database qui en contient 20M - la db est assez light à la campagne - et demande de mettre une feuille par branche pour optimiser les query, ce qui implique un grand arbre - **18GB de RAM !** - et de longs temps de calculs - 5400s - donc c'est pas possible sur raspberry (je sais pas si des algo out-of-core existent).
 
 ---
 
